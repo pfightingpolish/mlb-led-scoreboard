@@ -1,6 +1,6 @@
 {
   "defaults": {
-    "font_name": "9x18B"
+    "font_name": "12x17.bdf"
   },
   "bases": {
     "1B": {
@@ -21,15 +21,18 @@
   },
   "final": {
     "inning": {
+      "font_name": "10x11.bdf",
       "x": 67,
       "y": 61
     },
     "scrolling_text": {
+      "font_name": "10x11.bdf",
       "x": 0,
       "y": 44,
       "width": 128
     },
     "nohit_text": {
+      "font_name": "10x11.bdf",
       "x": 1,
       "y": 33
     }
@@ -41,11 +44,13 @@
         "y": 44
       },
       "text": {
+        "font_name": "10x11.bdf",
         "x": 46,
         "y": 44
       }
     },
     "number": {
+      "font_name": "10x11.bdf",
       "x": 120,
       "y": 45
     },
@@ -174,6 +179,7 @@
       "short_text": false
     },
     "scrolling_text": {
+      "font_name": "10x11.bdf",
       "x": 0,
       "y": 58,
       "width": 128
@@ -267,7 +273,7 @@
     }
   },
   "network": {
-    "font_name": "4x6",
+    "font_name": "10x11.bdf",
     "background": {
       "width": 7,
       "height": 7,
