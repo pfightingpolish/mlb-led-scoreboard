@@ -1,0 +1,46 @@
+{
+	"preferred": {
+		"teams": ["Brewers"],
+		"divisions": ["NL Central"]
+	},
+	"news_ticker": {
+		"team_offday": false,
+		"always_display": false,
+		"preferred_teams": true,
+		"traderumors": true,
+		"mlb_news": true,
+		"countdowns": false,
+		"date": true,
+		"date_format": "%A, %B %-d, %Y"
+	},
+	"standings": {
+		"team_offday": false,
+		"mlb_offday": true,
+		"always_display": false
+	},
+	"rotation": {
+		"enabled": true,
+		"scroll_until_finished": true,
+		"only_preferred": false,
+		"rates": {
+			"live": 12.0,
+			"final": 12.0,
+			"pregame": 12.0
+		},
+		"while_preferred_team_live": {
+			"enabled": false,
+			"during_inning_breaks": true
+		}
+	},
+	"weather": {
+		"apikey": "ce2e4b51fe5edc3fac3492352c24a964",
+		"location": "Milwaukee,wi,us",
+		"metric_units": false
+	},
+	"time_format": "12h",
+	"end_of_day": "00:00",
+	"full_team_names": true,
+	"scrolling_speed": 5,
+	"debug": false,
+	"demo_date": false
+}
