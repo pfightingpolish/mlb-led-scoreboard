@@ -2,7 +2,6 @@ from datetime import datetime, timedelta
 from final import Final
 from pregame import Pregame
 from scoreboard import Scoreboard
-from standings import Standings, Division, Team
 from status import Status
 from inning import Inning
 from weather import Weather
@@ -10,6 +9,7 @@ from headlines import Headlines
 import urllib
 import layout
 import mlbgame
+import statsapi
 import debug
 import time
 
@@ -77,7 +77,10 @@ class Data:
 
   def refresh_standings(self):
     try:
-      self.standings = Standings.fetch(self.year, self.month, self.day)
+      if self.config.demo_date:
+        self.standings = statsapi.standings_data("103,104","all",'false',2019,None)
+      else:
+        self.standings = statsapi.standings_data()
     except:
       debug.error("Failed to refresh standings.")
 
@@ -89,7 +92,6 @@ class Data:
       try:
         current_day = self.day
         self.set_current_date()
-
         all_games = mlbgame.day(self.year, self.month, self.day)
         if self.config.rotation_only_preferred:
           self.games = self.__filter_list_of_games(all_games, self.config.preferred_teams)
@@ -120,6 +122,17 @@ class Data:
     while attempts_remaining > 0:
       try:
         self.overview = mlbgame.overview(self.current_game().game_id)
+        self.RoadTeam = self.get_road_abbrev()
+        self.RoadID = self.get_team_id(self.RoadTeam)
+        self.GameNum = self.get_game_num()
+        self.FunctionDate = datetime(self.year, self.month, self.day)
+        debug.log("Game ID: {}".format(self.current_game().game_id))
+        debug.log("Road Team: {}".format(self.RoadTeam))
+        debug.log("Road ID: {}".format(self.RoadID))
+        debug.log("Doubleheader Game Number: {}".format(self.GameNum))
+        debug.log("Date: {}".format(self.FunctionDate))
+        self.Stats_Game_ID = statsapi.schedule(datetime.strftime(self.FunctionDate, '%Y-%m-%d'), team=self.RoadID)[self.GameNum].get('game_id')
+        self.linescore = statsapi.get('game_linescore', {'gamePk': self.Stats_Game_ID})
         self.__update_layout_state()
         self.needs_refresh = False
         self.print_overview_debug()
@@ -141,6 +154,84 @@ class Data:
     # If we run out of retries, just move on to the next game
     if attempts_remaining <= 0 and self.config.rotation_enabled:
       self.advance_to_next_game()
+
+  def get_game_num(self):
+    id_to_slice = self.current_game().game_id
+    TextNum = id_to_slice[-1:]
+    return int(TextNum) - 1
+
+  def get_road_abbrev(self):
+    id_to_slice = self.current_game().game_id
+    return id_to_slice[11:-12]
+
+  def get_team_id(self, team_abbrev):
+    print team_abbrev
+    if team_abbrev == "ari":
+      return 109
+    elif team_abbrev == "atl":
+      return 144
+    elif team_abbrev == "bal":
+      return 110
+    elif team_abbrev == "bos":
+      return 111
+    elif team_abbrev == "cha":
+      return 145
+    elif team_abbrev == "chn":
+      return 112
+    elif team_abbrev == "cin":
+      return 113
+    elif team_abbrev == "cle":
+      return 114
+    elif team_abbrev == "col":
+      return 115
+    elif team_abbrev == "det":
+      return 116
+    elif team_abbrev == "hou":
+      return 117
+    elif team_abbrev == "kca":
+      return 118
+    elif team_abbrev == "ana":
+      return 108
+    elif team_abbrev == "lan":
+      return 119
+    elif team_abbrev == "mia":
+      return 146
+    elif team_abbrev == "mil":
+      return 158
+    elif team_abbrev == "min":
+      return 142
+    elif team_abbrev == "nya":
+      return 147
+    elif team_abbrev == "nyn":
+      return 121
+    elif team_abbrev == "oak":
+      return 133
+    elif team_abbrev == "phi":
+      return 143
+    elif team_abbrev == "pit":
+      return 134
+    elif team_abbrev == "sdn":
+      return 135
+    elif team_abbrev == "sfn":
+      return 137
+    elif team_abbrev == "sea":
+      return 136
+    elif team_abbrev == "sln":
+      return 138
+    elif team_abbrev == "tba":
+      return 139
+    elif team_abbrev == "tex":
+      return 140
+    elif team_abbrev == "tor":
+      return 141
+    elif team_abbrev == "was":
+      return 120
+    elif team_abbrev == "nas":
+      return 160
+    elif team_abbrev == "aas":
+      return 159
+    else:
+      return 0
 
   def refresh_weather(self):
     self.weather.update()
@@ -172,23 +263,27 @@ class Data:
   # Standings
 
   def standings_for_preferred_division(self):
-    return self.__standings_for(self.config.preferred_divisions[0])
+    return self.__standings_for(self.config.preferred_divisions)
 
-  def __standings_for(self, division_name):
-    return next(division for division in self.standings.divisions if division.name == division_name)
+  def __standings_for(self, division_id):
+    return self.standings.get(division_id)
 
   def current_standings(self):
-    return self.__standings_for(self.config.preferred_divisions[self.current_division_index])
+    return self.__standings_for(self.current_division_index + 200)
 
   def advance_to_next_standings(self):
-    self.current_division_index = self.__next_division_index()
+    if self.current_division_index == 5:
+     self.current_division_index = 0
+    else:
+     self.current_division_index += 1
     return self.current_standings()
 
   def __next_division_index(self):
-    counter = self.current_division_index + 1
-    if counter >= len(self.config.preferred_divisions):
-      counter = 0
-    return counter
+    if self.current_division_index == 5:
+     self.current_division_index = 0
+    else:
+     self.current_division_index += 1
+    return self.current_division_index
 
   #
   # Games
@@ -204,6 +299,12 @@ class Data:
       if Status.is_live(preferred_overview.status) and not Status.is_inning_break(preferred_overview.inning_state):
         self.current_game_index = self.game_index_for_preferred_team()
         self.overview = preferred_overview
+	self.RoadTeam = self.get_road_abbrev()
+        self.RoadID = self.get_team_id(self.RoadTeam)
+        self.GameNum = self.get_game_num()
+        self.FunctionDate = datetime(self.year, self.month, self.day)
+        self.Stats_Game_ID = statsapi.schedule(datetime.strftime(self.FunctionDate, '%Y-%m-%d'), team=self.RoadID)[self.GameNum].get('game_id')
+        self.linescore = statsapi.get('game_linescore', {'gamePk': self.Stats_Game_ID})
         self.needs_refresh = False
         self.__update_layout_state()
         self.print_overview_debug()
@@ -271,8 +372,8 @@ class Data:
   # Debug info
 
   def print_overview_debug(self):
-    debug.log("Overview Refreshed: {}".format(self.overview.id))
+    debug.log("Overview Refreshed: {} {}".format(self.overview.id, self.Stats_Game_ID))
     debug.log("Pre: {}".format(Pregame(self.overview, self.config.time_format)))
-    debug.log("Live: {}".format(Scoreboard(self.overview)))
+    debug.log("Live: {}".format(Scoreboard(self.overview, self.linescore)))
     debug.log("Final: {}".format(Final(self.current_game())))
 

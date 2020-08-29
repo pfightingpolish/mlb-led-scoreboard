@@ -44,7 +44,7 @@ class Layout:
     if self.state in AVAILABLE_OPTIONAL_KEYS:
       if self.state in d:
         return d[self.state]
-    return d
+    return d 
 
   def set_state(self, new_state=None):
     if new_state in AVAILABLE_OPTIONAL_KEYS:

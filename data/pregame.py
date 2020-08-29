@@ -48,7 +48,7 @@ class Pregame:
     """Converts MLB's pregame times (Eastern) into the local time zone"""
     time_str = "{}:%M".format(self.time_format)
     if self.time_format == "%-I":
-      time_str += "%p"
+      time_str += " %p"
 
     game_time_eastern = datetime.strptime(time, '%I:%M%p')
     now = datetime.now()
@@ -58,7 +58,7 @@ class Pregame:
     return game_time_eastern.astimezone(tzlocal.get_localzone()).strftime(time_str)
 
   def __str__(self):
-    s = "<{} {}> {} @ {}; {}; {} vs {}".format(
+    s = "<{} {}> {} @ {}; {}; {} vs. {}".format(
       self.__class__.__name__, hex(id(self)),
       self.away_team, self.home_team, self.start_time,
       self.away_starter, self.home_starter)

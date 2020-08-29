@@ -11,7 +11,7 @@ except ImportError:
 
 
 HEADLINE_UPDATE_RATE = 60 * 60 # 1 hour between feed updates
-HEADLINE_SPACER_SIZE = 10 # Number of spaces between headlines
+HEADLINE_SPACER_SIZE = 32 # Number of spaces between headlines
 HEADLINE_MAX_FEEDS = 3 # Number of preferred team's feeds to fetch
 HEADLINE_MAX_ENTRIES = 7 # Number of headlines per feed
 FALLBACK_DATE_FORMAT = "%A, %B %-d"

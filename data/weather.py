@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import debug
 import time
 import pyowm
@@ -74,7 +75,7 @@ class Weather:
 
   def wind_speed_string(self):
     speed_unit_string = "m/s" if self.speed_unit == 'meters_sec' else 'mph'
-    return "{}{}".format(int(round(self.wind_speed)), speed_unit_string)
+    return "{} {}".format(int(round(self.wind_speed)), speed_unit_string)
 
   def wind_dir_string(self):
     return self.__deg_to_compass(self.wind_dir)
