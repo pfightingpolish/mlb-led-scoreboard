@@ -33,7 +33,7 @@ class Pregame:
     font = self.layout.font("pregame.start_time")
     color = self.colors.graphics_color("pregame.start_time")
     time_x = center_text_position(time_text, coords["x"], font["size"]["width"])
-    graphics.DrawText(self.canvas, font["font"], time_x, coords["y"], color, time_text)
+    graphics.DrawText(self.canvas, font["font"], coords["x"], coords["y"], color, time_text)
 
   def __render_warmup(self):
     warmup_text = self.game.status
@@ -41,11 +41,11 @@ class Pregame:
     font = self.layout.font("pregame.warmup_text")
     color = self.colors.graphics_color("pregame.warmup_text")
     warmup_x = center_text_position(warmup_text, coords["x"], font["size"]["width"])
-    graphics.DrawText(self.canvas, font["font"], warmup_x, coords["y"], color, warmup_text)
+    graphics.DrawText(self.canvas, font["font"], coords["x"], coords["y"], color, warmup_text)
 
   def __render_probable_starters(self):
     coords = self.layout.coords("pregame.scrolling_text")
     font = self.layout.font("pregame.scrolling_text")
     color = self.colors.graphics_color("pregame.scrolling_text")
-    pitchers_text = self.game.away_starter + ' vs ' + self.game.home_starter
+    pitchers_text = self.game.away_starter + ' vs. ' + self.game.home_starter
     return ScrollingText(self.canvas, coords["x"], coords["y"], coords["width"], font, color, self.bgcolor, pitchers_text).render(self.probable_starter_pos)

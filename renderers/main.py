@@ -1,3 +1,4 @@
+# -*- coding: ascii -*-
 from data.final import Final
 from data.pregame import Pregame
 from data.scoreboard import Scoreboard
@@ -9,8 +10,10 @@ from renderers.status import StatusRenderer
 from renderers.standings import StandingsRenderer
 from renderers.offday import OffdayRenderer
 from data.data import Data
+from datetime import datetime, date, time, timedelta
 import debug
 import time
+import multiprocessing
 
 GAMES_REFRESH_RATE = 900.0
 SCROLL_TEXT_FAST_RATE = 0.1
@@ -30,27 +33,24 @@ class MainRenderer:
 
     # Always display the news ticker
     if self.data.config.news_ticker_always_display:
+      debug.info("News Ticker Always Display")
       self.__render_offday()
 
     # Always display the standings
     elif self.data.config.standings_always_display:
+      debug.info("Standings_Always_Display")
       self.__render_standings()
 
     # Full MLB Offday
     elif self.data.is_offday():
-      if self.data.config.standings_mlb_offday:
-        self.__render_standings()
-      else:
-        self.__render_offday()
+      debug.info("Is Offday")
+      self.__render_offday()
 
     # Preferred Team Offday
     elif self.data.is_offday_for_preferred_team():
-      if self.data.config.news_ticker_team_offday:
-        self.__render_offday()
-      elif self.data.config.standings_team_offday:
-        self.__render_standings()
-      else:
-        self.__render_game()
+      debug.info("Is_Offday_For_Preferred_Team")
+#      self.__render_offday()
+      self.__render_game()
 
     # Playball!
     else:
@@ -60,10 +60,12 @@ class MainRenderer:
   def __render_offday(self):
     self.scrolling_finished = False
 
-    while True:
+    RightNow = datetime.now()
+    MoveOn = RightNow + timedelta(minutes=5)
+
+    while datetime.now() < MoveOn:
       color = self.data.config.scoreboard_colors.color("default.background")
       self.canvas.Fill(color["r"], color["g"], color["b"])
-
       scroll_max_x = self.__max_scroll_x(self.data.config.layout.coords("offday.scrolling_text"))
       renderer = OffdayRenderer(self.canvas, self.data, self.scrolling_text_pos)
       self.__update_scrolling_text_pos(renderer.render())
@@ -71,6 +73,7 @@ class MainRenderer:
       self.data.refresh_news_ticker()
       self.canvas = self.matrix.SwapOnVSync(self.canvas)
       time.sleep(self.data.config.scrolling_speed)
+    return self.__render_standings()
 
   # Render the standings screen
   def __render_standings(self):
@@ -81,6 +84,7 @@ class MainRenderer:
       debug.error("Could not render standings.  Falling back to off day.")
       debug.error("{}: {}".format(type(ex).__name__, ex.args))
       self.__render_offday()
+    return self.__render_offday()
 
   # Renders a game screen based on it's status
   def __render_game(self):
@@ -104,7 +108,7 @@ class MainRenderer:
         self.scrolling_finished = True
 
       # If the status is irregular and there's no 'reason' text, finish scrolling
-      if Status.is_irregular(self.data.overview.status) and Scoreboard(self.data.overview).get_text_for_reason() is None:
+      if Status.is_irregular(self.data.overview.status) and Scoreboard(self.data.overview, self.data.linescore).get_text_for_reason() is None:
         self.scrolling_finished = True
 
       time.sleep(refresh_rate)
@@ -166,7 +170,7 @@ class MainRenderer:
 
     # Draw the pregame renderer
     if Status.is_pregame(overview.status):
-      scoreboard = Scoreboard(overview)
+      scoreboard = Scoreboard(overview, self.data.linescore)
       scroll_max_x = self.__max_scroll_x(self.data.config.layout.coords("pregame.scrolling_text"))
       pregame = Pregame(overview, self.data.config.time_format)
       renderer = PregameRenderer(self.canvas, pregame, scoreboard, self.data, self.scrolling_text_pos)
@@ -176,13 +180,13 @@ class MainRenderer:
     elif Status.is_complete(overview.status):
       scroll_max_x = self.__max_scroll_x(self.data.config.layout.coords("final.scrolling_text"))
       final = Final(game)
-      scoreboard = Scoreboard(overview)
+      scoreboard = Scoreboard(overview, self.data.linescore)
       renderer = FinalRenderer(self.canvas, final, scoreboard, self.data, self.scrolling_text_pos)
       self.__update_scrolling_text_pos(renderer.render())
 
     # Draw the scoreboar renderer
     elif Status.is_irregular(overview.status):
-      scoreboard = Scoreboard(overview)
+      scoreboard = Scoreboard(overview, self.data.linescore)
       if scoreboard.get_text_for_reason():
         scroll_max_x = self.__max_scroll_x(self.data.config.layout.coords("status.scrolling_text"))
         renderer = StatusRenderer(self.canvas, scoreboard, self.data, self.scrolling_text_pos)
@@ -190,7 +194,7 @@ class MainRenderer:
       else:
         StatusRenderer(self.canvas, scoreboard, self.data).render()
     else:
-      scoreboard = Scoreboard(overview)
+      scoreboard = Scoreboard(overview, self.data.linescore)
       ScoreboardRenderer(self.canvas, scoreboard, self.data).render()
     self.canvas = self.matrix.SwapOnVSync(self.canvas)
 

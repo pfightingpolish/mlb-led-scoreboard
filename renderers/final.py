@@ -29,22 +29,26 @@ class Final:
     coords = self.data.config.layout.coords("final.scrolling_text")
     font = self.data.config.layout.font("final.scrolling_text")
     color = self.colors.graphics_color("final.scrolling_text")
-    scroll_text = "W: {} {}-{} L: {} {}-{}".format(
+    scroll_text = "W: {} ({}-{})   L: {} ({}-{})".format(
       self.game.winning_pitcher, self.game.winning_pitcher_wins, self.game.winning_pitcher_losses,
       self.game.losing_pitcher, self.game.losing_pitcher_wins, self.game.losing_pitcher_losses)
     if self.game.save_pitcher:
-      scroll_text += " SV: {} ({})".format(self.game.save_pitcher, self.game.save_pitcher_saves)
+      scroll_text += "   SV: {} ({})".format(self.game.save_pitcher, self.game.save_pitcher_saves)
     return ScrollingText(self.canvas, coords["x"], coords["y"], coords["width"], font, color, self.bgcolor, scroll_text).render(self.scroll_pos)
 
   def __render_final_inning(self):
-    text = "FINAL"
+    text = "Final"
     color = self.colors.graphics_color("final.inning")
     coords = self.data.config.layout.coords("final.inning")
+    coords2 = self.data.config.layout.coords("final.extrainning")
     font = self.data.config.layout.font("final.inning")
+    font2 = self.data.config.layout.font("final.scrolling_text")
     if self.scoreboard.inning.number != NORMAL_GAME_LENGTH:
-      text += " " + str(self.scoreboard.inning.number)
-    text_x = center_text_position(text, coords["x"], font["size"]["width"])
-    graphics.DrawText(self.canvas, font["font"], text_x, coords["y"], color, text)
+     ExtraText = " (" + str(self.scoreboard.inning.number) + " innings)"
+    else:
+     ExtraText = ""
+    graphics.DrawText(self.canvas, font["font"], coords["x"], coords["y"], color, text)
+    graphics.DrawText(self.canvas, font2["font"], coords2["x"], coords2["y"], color, ExtraText)
 
     if self.data.config.layout.state_is_nohitter():
       nohit_text = NoHitterRenderer(self.canvas, self.data).nohitter_text()

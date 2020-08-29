@@ -1,6 +1,7 @@
 from rgbmatrix import graphics
 from utils import get_font, center_text_position
 from data.inning import Inning
+from data.atbat import AtBat
 
 # Because normal games are 9 innings, silly
 NORMAL_GAME_LENGTH = 9
@@ -8,11 +9,12 @@ NORMAL_GAME_LENGTH = 9
 class InningRenderer:
   """Renders the inning and inning arrow on the scoreboard."""
 
-  def __init__(self, canvas, inning, data):
+  def __init__(self, canvas, inning, data, atbat):
     self.canvas = canvas
     self.inning = inning
     self.layout = data.config.layout
     self.colors = data.config.scoreboard_colors
+    self.atbat = atbat
 
   def render(self):
     if self.inning.state == Inning.TOP or self.inning.state == Inning.BOTTOM:
@@ -25,14 +27,13 @@ class InningRenderer:
     number_color = self.colors.graphics_color("inning.number")
     coords = self.layout.coords("inning.number")
     font = self.layout.font("inning.number")
-    pos_x = coords["x"] - (len(str(self.inning.number)) * font["size"]["width"])
-    graphics.DrawText(self.canvas, font["font"], pos_x, coords["y"], number_color, str(self.inning.number))
+    graphics.DrawText(self.canvas, font["font"], coords["x"], coords["y"], number_color, str(self.inning.number))
 
   def __render_inning_half(self):
     font = self.layout.font("inning.number")
     num_coords = self.layout.coords("inning.number")
     arrow_coords = self.layout.coords("inning.arrow")
-    inning_size = (len(str(self.inning.number)) * font["size"]["width"])
+    inning_size = 8
     arrow_size = arrow_coords["size"]
     if self.inning.state == Inning.TOP:
       arrow_pos_x = num_coords["x"] - inning_size + arrow_coords["up"]["x_offset"]
@@ -51,10 +52,20 @@ class InningRenderer:
     color = self.colors.graphics_color("inning.break.text")
     text = self.inning.state
     num  = self.inning.ordinal()
-    text_x = center_text_position(text, text_coords["x"], text_font["size"]["width"])
-    num_x = center_text_position(num, num_coords["x"], num_font["size"]["width"])
-    graphics.DrawText(self.canvas, text_font["font"], text_x, text_coords["y"], color, text)
+#    text_x = center_text_position(text, text_coords["x"], text_font["size"]["width"])
+    if text == "Middle":
+     num_x = 19
+     printtext = "Mid"
+    elif text == "End":
+     num_x = 24
+     printtext = "End"
+#    num_x = center_text_position(num, num_coords["x"], num_font["size"]["width"])
+    graphics.DrawText(self.canvas, text_font["font"], 2, num_coords["y"], color, printtext)
     graphics.DrawText(self.canvas, num_font["font"], num_x, num_coords["y"], color, num)
+    graphics.DrawText(self.canvas, num_font["font"], 2, num_coords["y"] + 13, color, "Due Up:")
+    graphics.DrawText(self.canvas, text_font["font"], 55, num_coords["y"] -3, color, self.atbat.get_batter())
+    graphics.DrawText(self.canvas, text_font["font"], 55, num_coords["y"] + 8, color, self.atbat.get_onDeck())
+    graphics.DrawText(self.canvas, text_font["font"], 55, num_coords["y"] + 19, color, self.atbat.get_inHole())
 
   # direction can be -1 for down or 1 for up
   def __render_arrow(self, x, y, size, direction):

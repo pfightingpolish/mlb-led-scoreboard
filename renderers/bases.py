@@ -35,15 +35,26 @@ class BasesRenderer:
     x, y = (base["x"], base["y"])
     size = base["size"]
     half = abs(size/2)
-    graphics.DrawLine(self.canvas, x + half, y, x, y + half, color)
-    graphics.DrawLine(self.canvas, x + half, y, x + size, y + half, color)
-    graphics.DrawLine(self.canvas, x + half, y + size, x, y + half, color)
-    graphics.DrawLine(self.canvas, x + half, y + size, x + size, y + half, color)
+
+#    for x in range(88, 128):
+#      graphics.DrawLine(self.canvas, x, 36, x, 64, self.colors.graphics_color("default.background"))
+
+    graphics.DrawLine(self.canvas, 0, 45, 90, 45, color)
+    graphics.DrawLine(self.canvas, 90, 31, 90, 64, color)
+    graphics.DrawLine(self.canvas, 93, 41, 109, 57, color)
+    graphics.DrawLine(self.canvas, 109, 57, 125, 41, color)
+    graphics.DrawLine(self.canvas, 101, 49, 109, 41, color)
+    graphics.DrawLine(self.canvas, 109, 41, 117, 49, color)
+#    graphics.DrawLine(self.canvas, x + half, y, x, y + half, color)
+#    graphics.DrawLine(self.canvas, x + half, y, x + size, y + half, color)
+#    graphics.DrawLine(self.canvas, x + half, y + size, x, y + half, color)
+#    graphics.DrawLine(self.canvas, x + half, y + size, x + size, y + half, color)
 
   def __render_baserunner(self, base, color):
     x, y = (base["x"], base["y"])
     size = base["size"]
     half = abs(size/2)
+    graphics.DrawLine(self.canvas, x + half, y + size, x + size, y + half, color)
     for offset in range(1, half+1):
       graphics.DrawLine(self.canvas, x + half - offset, y + size - offset, x + half + offset, y + size - offset, color)
       graphics.DrawLine(self.canvas, x + half - offset, y + offset, x + half + offset, y + offset, color)

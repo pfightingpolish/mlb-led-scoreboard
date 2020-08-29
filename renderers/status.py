@@ -9,11 +9,11 @@ from utils import get_font, center_text_position
 CHALLENGE_SHORTHAND = "Challenge"
 
 # Handle statuses that are too long for 32-wide boards.
-POSTPONED_SHORTHAND = 'Postpd'
-CANCELLED_SHORTHAND = "Cancl'd"
-SUSPENDED_SHORTHAND = "Suspnd"
-CHALLENGE_SHORTHAND_32 = "Chalnge"
-UMPIRE_REVIEW_SHORTHAND = "Review"
+POSTPONED_SHORTHAND = 'Postponed'
+CANCELLED_SHORTHAND = "Cancelled"
+SUSPENDED_SHORTHAND = "Suspended"
+CHALLENGE_SHORTHAND_32 = "Challenge"
+UMPIRE_REVIEW_SHORTHAND = "Umpire Review"
 
 class StatusRenderer:
   def __init__(self, canvas, scoreboard, data, scroll_pos = 0):
@@ -41,8 +41,13 @@ class StatusRenderer:
     text = self.__get_text_for_status()
     coords = self.data.config.layout.coords("status.text")
     font = self.data.config.layout.font("status.text")
-    text_x = center_text_position(text, coords["x"], font["size"]["width"])
-    graphics.DrawText(self.canvas, font["font"], text_x, coords["y"], color, text)
+    font2 = self.data.config.layout.font("status.scrolling_text")
+    if len(text) >= 23:
+      self.__render_long_statuses()
+    if len(text) >= 16 and len(text) < 23:
+      graphics.DrawText(self.canvas, font2["font"], coords["x"], coords["y"] - 3, color, text)
+    if len(text) < 16:
+      graphics.DrawText(self.canvas, font["font"], coords["x"], coords["y"], color, text)
 
   def __render_scroll_text(self):
     coords = self.data.config.layout.coords("status.scrolling_text")
@@ -50,6 +55,13 @@ class StatusRenderer:
     color = self.colors.graphics_color("status.scrolling_text")
     scroll_text = "{}".format(self.scoreboard.get_text_for_reason())
     return ScrollingText(self.canvas, coords["x"], coords["y"], coords["width"], font, color, self.bgcolor, scroll_text).render(self.scroll_pos)
+
+  def __render_long_statuses(self):
+    coords = self.data.config.layout.coords("status.scrolling_text")
+    font = self.data.config.layout.font("status.scrolling_text")
+    color = self.colors.graphics_color("status.scrolling_text")
+    scroll_text = self.__get_text_for_status()
+    return ScrollingText(self.canvas, coords["x"], coords["y"] - 22, coords["width"], font, color, self.bgcolor, scroll_text).render(self.scroll_pos)
 
   def __get_text_for_status(self):
     text = self.scoreboard.game_status

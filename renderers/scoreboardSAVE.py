@@ -18,7 +18,7 @@ class Scoreboard:
 
   def render(self):
     TeamsRenderer(self.canvas, self.scoreboard.home_team, self.scoreboard.away_team, self.data).render()
-    InningRenderer(self.canvas, self.scoreboard.inning, self.data, self.scoreboard.atbat).render()
+    InningRenderer(self.canvas, self.scoreboard.inning, self.data).render()
 
     if self.scoreboard.inning.state == Inning.TOP or self.scoreboard.inning.state == Inning.BOTTOM:
 
@@ -29,7 +29,6 @@ class Scoreboard:
           NoHitterRenderer(self.canvas, self.data).render()
 
       PitchesRenderer(self.canvas, self.scoreboard.pitches, self.data).render()
-      AtBatRenderer(self.canvas, self.scoreboard.atbat, self.data).render()
-#      OutsRenderer(self.canvas, self.scoreboard.outs, self.data).render()
+      OutsRenderer(self.canvas, self.scoreboard.outs, self.data).render()
       BasesRenderer(self.canvas, self.scoreboard.bases, self.data).render()
     NetworkErrorRenderer(self.canvas, self.data).render()

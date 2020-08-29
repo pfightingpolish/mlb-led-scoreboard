@@ -43,7 +43,6 @@ class OffdayRenderer:
     coords = self.layout.coords("offday.{}".format(keyname))
     font = self.layout.font("offday.{}".format(keyname))
     font2 = self.layout.font("offday.time")
-    font3 = self.layout.font("offday.hollow")
     color = self.colors.graphics_color("offday.{}".format(keyname))
 
     w = 128
@@ -73,26 +72,24 @@ class OffdayRenderer:
 #        if random.randint(0,42) > 41:
 #          self.canvas.SetPixel(x, y, 255, 191, 0)
 
+#    graphics.DrawText(self.canvas, font["font"], 6, 16, color, "Dedicated to")
 #    graphics.DrawText(self.canvas, font["font"], 13, 25, color, "the great")
 #    graphics.DrawText(self.canvas, font["font"], 9, 34, color, "fans of the")
-#    graphics.DrawText(self.canvas, font["font"], 21, 43, color, "City of")
-#    graphics.DrawText(self.canvas, font["font"], 44, 10, color, "WELCOME")
-#    graphics.DrawText(self.canvas, font3["font"], 33, 27, color, "Public")
-#    graphics.DrawText(self.canvas, font3["font"], 25, 44, color, "Address")
-#    graphics.DrawText(self.canvas, font3["font"], 9, 61, color, "Announcers")
-    graphics.DrawText(self.canvas, font2["font"], 17, 63, color, "#KindnessInMKE")
+    graphics.DrawText(self.canvas, font2["font"], 36, 20, color, "15")
+    graphics.DrawText(self.canvas, font2["font"], 28, 32, color, "JEFF")
+    graphics.DrawText(self.canvas, font2["font"], 14, 44, color, "BRUBAKER")
+    graphics.DrawText(self.canvas, font["font"], 15, 53, color, "First Base")
 
-
-#    for x in range(0,w):
+#    for x in range(0,84):
 #     for y in range(0,1):
 #      self.canvas.SetPixel(x,y,255,191,0)
 #    for x in range (0,1):
-#     for y in range (0,h):
+#     for y in range (0,64):
 #      self.canvas.SetPixel(x,y,255,191,0)
-#    for x in range(0,w):
+#    for x in range(0,84):
 #     for y in range(63,64):
 #      self.canvas.SetPixel(x,y,255,191,0)
-#    for x in range (127,128):
+#    for x in range (83,84):
 #     for y in range (0,64):
 #      self.canvas.SetPixel(x,y,255,191,0)
 # Single line bold: 14 height
@@ -108,19 +105,11 @@ class OffdayRenderer:
 
 #    self.canvas.SetImage(image_rgb, 1, 1)
 
-    image_file = get_file("Assets/KindnessMKE.jpg")
-    image = Image.open(image_file)
-    image_rgb = image.convert("RGB")
+#    image_file = get_file("Assets/CBS58.bmp")
+#    image = Image.open(image_file)
+#    image_rgb = image.convert("RGB")
 
-    self.canvas.SetImage(image_rgb, 9, 1)
-
-    image_file2 = get_file("Assets/BrewersSide.jpg")
-    image2 = Image.open(image_file2)
-    image_rgb2 = image2.convert("RGB")
-
-    self.canvas.SetImage(image_rgb2, 82, 6)
-
-
+#    self.canvas.SetImage(image_rgb, 5, 4)
 
 # The Pfeifers Welcome
 
@@ -131,11 +120,11 @@ class OffdayRenderer:
 #    self.canvas.SetImage(image_rgb, 1, 1)
 
 # Headshot
-#    image_file = get_file("Assets/Le.bmp")
-#    image = Image.open(image_file)
-#    image_rgb = image.convert("RGB")
+    image_file = get_file("Assets/Brubaker.bmp")
+    image = Image.open(image_file)
+    image_rgb = image.convert("RGB")
 
-#    self.canvas.SetImage(image_rgb, 84,0)
+    self.canvas.SetImage(image_rgb, 84,0)
 
 # Welcome
 

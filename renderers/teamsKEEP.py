@@ -64,10 +64,6 @@ class TeamsRenderer:
 
     away_score_coords = self.data.config.layout.coords("teams.runs.away")
     home_score_coords = self.data.config.layout.coords("teams.runs.home")
-    away_hits_coords = self.data.config.layout.coords("teams.hits.away")
-    home_hits_coords = self.data.config.layout.coords("teams.hits.home")
-    away_errors_coords = self.data.config.layout.coords("teams.errors.away")
-    home_errors_coords = self.data.config.layout.coords("teams.errors.home")
 
     for team in ["away","home"]:
       for x in range(bg_coords[team]["width"]):
@@ -84,15 +80,12 @@ class TeamsRenderer:
           x_offset = accent_coords[team]["x"]
           y_offset = accent_coords[team]["y"]
           self.canvas.SetPixel(x + x_offset, y + y_offset, color['r'], color['g'], color['b'])
+	  self.canvas.SetPixel(x + x_offset, y + y_offset + 17, color['r'], color['g'], color['b'])
           
     self.__render_team_text(self.away_team, "away", away_colors, away_name_coords["x"], away_name_coords["y"])
     self.__render_team_text(self.home_team, "home", home_colors, home_name_coords["x"], home_name_coords["y"])
-    self.__render_team_score(self.away_team.runs, self.away_team.hits, self.away_team.errors, "away", away_colors, away_score_coords["x"], away_score_coords["y"])
-    self.__render_team_score(self.home_team.runs, self.home_team.hits, self.home_team.errors, "home", home_colors, home_score_coords["x"], home_score_coords["y"])
-    self.__render_team_hits(self.away_team.hits, self.away_team.errors, "away", away_colors, away_hits_coords["x"], away_hits_coords["y"])
-    self.__render_team_hits(self.home_team.hits, self.home_team.errors, "home", home_colors, home_hits_coords["x"], home_hits_coords["y"])
-    self.__render_team_errors(self.away_team.errors, "away", away_colors, away_errors_coords["x"], away_errors_coords["y"])
-    self.__render_team_errors(self.home_team.errors, "home", home_colors, home_errors_coords["x"], home_errors_coords["y"])
+    self.__render_team_score(self.away_team.runs, "away", away_colors, away_score_coords["x"], away_score_coords["y"])
+    self.__render_team_score(self.home_team.runs, "home", home_colors, home_score_coords["x"], home_score_coords["y"])
 
   def __render_team_text(self, team, homeaway, colors, x, y):
     text_color = colors.get('text', self.default_colors['text'])
@@ -103,50 +96,11 @@ class TeamsRenderer:
       team_text = '{:13s}'.format(team.name)
     graphics.DrawText(self.canvas, font["font"], x, y, text_color_graphic, team_text)
 
-  def __render_team_score(self, runs, hits, errors, homeaway, colors, x, y):
+  def __render_team_score(self, runs, homeaway, colors, x, y):
     text_color = colors.get('text', self.default_colors['text'])
     text_color_graphic = graphics.Color(text_color['r'], text_color['g'], text_color['b'])
     coords = self.data.config.layout.coords("teams.runs.{}".format(homeaway))
     font = self.data.config.layout.font("teams.runs.{}".format(homeaway))
     team_runs = str(runs)
-    if runs == 1:
-     team_runs_x = coords["x"] + 1
-    elif runs == 11:
-     team_runs_x = coords["x"] - 2
-    elif (runs >=11 and runs <= 19) or runs == 10 or runs == 21 or runs == 31 or runs == 41:
-     team_runs_x = coords["x"] - 3
-    elif runs > 10:
-     team_runs_x = coords["x"] - 4
-    else:
-     team_runs_x = coords["x"]
+    team_runs_x = coords["x"] - (len(team_runs) * font["size"]["width"])
     graphics.DrawText(self.canvas, font["font"], team_runs_x, y, text_color_graphic, team_runs)
-
-  def __render_team_hits(self, hits, errors, homeaway, colors, x, y):
-    text_color = colors.get('text', self.default_colors['text'])
-    text_color_graphic = graphics.Color(text_color['r'], text_color['g'], text_color['b'])
-    coords = self.data.config.layout.coords("teams.hits.{}".format(homeaway))
-    font = self.data.config.layout.font("teams.hits.{}".format(homeaway))
-    team_hits = str(hits)
-    if hits == 1:
-     team_hits_x = coords["x"] + 1
-    elif hits == 11:
-     team_hits_x = coords["x"] - 2
-    elif (hits >= 11 and hits <= 19) or hits == 10 or hits == 21 or hits == 31 or hits == 41:
-     team_hits_x = coords["x"] - 3
-    elif hits > 10:
-     team_hits_x = coords["x"] - 4
-    else:
-     team_hits_x = coords["x"]
-    graphics.DrawText(self.canvas, font["font"], team_hits_x, y, text_color_graphic, team_hits)
-
-  def __render_team_errors(self, errors, homeaway, colors, x, y):
-    text_color = colors.get('text', self.default_colors['text'])
-    text_color_graphic = graphics.Color(text_color['r'], text_color['g'], text_color['b'])
-    coords = self.data.config.layout.coords("teams.errors.{}".format(homeaway))
-    font = self.data.config.layout.font("teams.errors.{}".format(homeaway))
-    team_errors = str(errors)
-    if errors == 1:
-     team_errors_x = coords["x"] + 1
-    else:
-     team_errors_x = coords["x"]
-    graphics.DrawText(self.canvas, font["font"], team_errors_x, y, text_color_graphic, team_errors)

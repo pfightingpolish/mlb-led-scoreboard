@@ -3,7 +3,7 @@ from utils import center_text_position
 import data.layout
 import debug
 
-NETWORK_ERROR_TEXT = "!"
+NETWORK_ERROR_TEXT = "Experiencing network issues"
 
 class NetworkErrorRenderer:
   def __init__(self, canvas, data):
